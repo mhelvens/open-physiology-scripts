@@ -1,0 +1,46 @@
+{
+  "name": "github-api-scripting",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "init-repo": "babel-node tools/init-repo.js"
+  },
+  "author": "Michiel Helvensteijn <mhelvens@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "ascii-table": "0.0.9",
+    "babel-cli": "6",
+    "babel-core": "6",
+    "babel-plugin-espower": "2",
+    "babel-plugin-syntax-flow": "6",
+    "babel-plugin-transform-async-to-generator": "6",
+    "babel-plugin-transform-builtin-extend": "1",
+    "babel-plugin-transform-class-properties": "6",
+    "babel-plugin-transform-decorators-legacy": "1",
+    "babel-plugin-transform-es2015-instanceof": "6",
+    "babel-plugin-transform-flow-strip-types": "6",
+    "babel-plugin-transform-function-bind": "6",
+    "babel-plugin-transform-object-rest-spread": "6",
+    "babel-plugin-transform-strict-mode": "6",
+    "babel-plugin-typecheck": "3",
+    "babel-plugin-unassert": "2",
+    "babel-polyfill": "6",
+    "babel-preset-es2015": "6",
+    "power-assert": "1"
+  },
+  "dependencies": {
+    "bound-native-methods": "^0.1.6",
+    "deep-freeze-strict": "^1.1.1",
+    "fraction.js": "^3.3.1",
+    "github": "^9.2.0",
+    "graph.js": "^1.20.10",
+    "inquirer": "^3.0.6",
+    "lodash": "^4.13.1",
+    "lodash-bound": "^1.1.1",
+    "node-promisify": "^1.2.0",
+    "rearg": "0.0.2",
+    "rxjs": "5",
+    "utilities": "open-physiology/utilities#v0.1.0"
+  }
+}
