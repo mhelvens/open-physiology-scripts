@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "init-repo": "babel-node tools/init-repo.js"
+    "init-repo":              "babel-node tools/init-repo.js",
+    "update-repo-milestones": "babel-node tools/update-repo-milestones.js"
   },
   "author": "Michiel Helvensteijn <mhelvens@gmail.com>",
   "license": "MIT",
