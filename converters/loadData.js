@@ -252,3 +252,62 @@ export function exportData(model){
         saveAs(blob, 'openPhysiologyData.json');
     })();
 }
+
+/**
+ * Convert MySQL data to convenient JSON format for ApiNatomy demo tool
+ */
+export function simplifyData(){
+    console.log("Starting conversion...");
+
+    let lyphMap = {};
+    let materialMap = {};
+    for (let lyph of lyphs.filter(lyph =>
+        !lyph.name.endsWith("tree") && ["BAG", "CYST", "TUBE", "GEOMETRIC"].includes(lyph.type))){
+        let jsonDef = {id: lyph.ID, name: lyph.name};
+        if (lyph.type !== "GEOMETRIC"){
+            jsonDef.topology = lyph.type;
+        }
+        if (lyph.thickness){
+            let range = [...lyph.thickness.match( /\d+/g )];
+            lyph.thickness = {min: range[1], max: range[0]};
+        }
+        if (lyph.lgth){
+            let range = [...lyph.lgth.match( /\d+/g )];
+            lyph.length = {min: range[1], max: range[0]};
+        }
+        if (lyph.ontoref) { jsonDef.external = lyph.ontoref; }
+        lyphMap[lyph.ID] = jsonDef;
+    }
+
+    for (let lyph of lyphs.filter(lyph => (lyph.type === "MATERIAL"))){
+        let jsonDef = {id: lyph.ID, name: lyph.name};
+        if (lyph.ontoref) { jsonDef.externals = lyph.ontoref; }
+        materialMap[lyph.ID] = jsonDef;
+    }
+
+    for (let rel of relations.filter(rel => (rel.relation === "is_layer_of_in_position"))){
+        let lyph1 = lyphMap[rel.object];
+        let lyph2 = lyphMap[rel.subject];
+        if (!lyph1 || !lyph2){
+            console.log("Error: relationship ends not found!", rel.object, rel.subject, lyph1, lyph2);
+        } else {
+            if (!lyph1.layers){
+                lyph1.layers = [];
+            }
+            lyph1.layers.push({id: lyph2.id, position: rel.extra});
+        }
+    }
+
+
+    for (let lyph of Object.values(lyphMap)){
+        if (lyph.layers){
+            lyph.layers = lyph.layers.sort((a,b) => (a.position > b.position)).map(x => x.id);
+        }
+    }
+
+    let data = [];
+    data.push("lyphs:" + JSON.stringify(Object.values(lyphMap)) + "\n");
+    data.push("materials:" + JSON.stringify(Object.values(materialMap)));
+    let blob = new Blob(data, { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, 'apinatomyDemo.json');
+}

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "init-repo":              "babel-node tools/init-repo.js",
-    "converter":              "cross-env BABEL_ENV=production webpack",
+    "init-repo": "babel-node tools/init-repo.js",
+    "converter": "cross-env BABEL_ENV=production webpack",
     "update-repo-milestones": "babel-node tools/update-repo-milestones.js"
   },
   "author": "Michiel Helvensteijn <mhelvens@gmail.com>",
@@ -47,12 +47,12 @@
     "lodash": "^4.13.1",
     "lodash-bound": "^1.1.1",
     "node-promisify": "^1.2.0",
-    "rearg": "0.0.2",
-    "rxjs": "5",
-    "utilities": "open-physiology/utilities#v0.1.0",
     "open-physiology-model": "github:open-physiology/open-physiology-model",
     "raw-loader": "^0.5.1",
+    "rearg": "0.0.2",
+    "rxjs": "5",
     "save-as": "^0.1.8",
+    "utilities": "open-physiology/utilities#v0.1.0",
     "zone.js": "0.7"
   }
 }
