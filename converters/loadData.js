@@ -269,11 +269,11 @@ export function simplifyData(){
         }
         if (lyph.thickness){
             let range = [...lyph.thickness.match( /\d+/g )];
-            lyph.thickness = {min: range[1], max: range[0]};
+            jsonDef.thickness = {min: range[0], max: range[1]};
         }
         if (lyph.lgth){
             let range = [...lyph.lgth.match( /\d+/g )];
-            lyph.length = {min: range[1], max: range[0]};
+            jsonDef.length = {min: range[0], max: range[1]};
         }
         if (lyph.ontoref) { jsonDef.external = lyph.ontoref; }
         lyphMap[lyph.ID] = jsonDef;
@@ -281,7 +281,7 @@ export function simplifyData(){
 
     for (let lyph of lyphs.filter(lyph => (lyph.type === "MATERIAL"))){
         let jsonDef = {id: lyph.ID, name: lyph.name};
-        if (lyph.ontoref) { jsonDef.externals = lyph.ontoref; }
+        if (lyph.ontoref) { jsonDef.external = lyph.ontoref; }
         materialMap[lyph.ID] = jsonDef;
     }
 
@@ -305,9 +305,17 @@ export function simplifyData(){
         }
     }
 
-    let data = [];
-    data.push("lyphs:" + JSON.stringify(Object.values(lyphMap)) + "\n");
-    data.push("materials:" + JSON.stringify(Object.values(materialMap)));
-    let blob = new Blob(data, { type: 'text/plain;charset=utf-8' });
+    let data = {
+        lyphs: Object.values(lyphMap),
+        materials: Object.values(materialMap)
+    };
+
+    let blob = new Blob([JSON.stringify(data)], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, 'apinatomyDemo.json');
+
+    // fs.writeFile('apinatomyDemo.json', JSON.stringify(data), (err) => {
+    //     if (err) throw err;
+    //     console.log('The file has been saved!');
+    // });
+
 }
