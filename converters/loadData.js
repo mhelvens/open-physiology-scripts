@@ -261,6 +261,8 @@ export function simplifyData(){
 
     let lyphMap = {};
     let materialMap = {};
+
+    //Lyphs
     for (let lyph of lyphs.filter(lyph =>
         !lyph.name.endsWith("tree") && ["BAG", "CYST", "TUBE", "GEOMETRIC"].includes(lyph.type))){
         let jsonDef = {id: lyph.ID, name: lyph.name};
@@ -279,12 +281,14 @@ export function simplifyData(){
         lyphMap[lyph.ID] = jsonDef;
     }
 
+    //Materials
     for (let lyph of lyphs.filter(lyph => (lyph.type === "MATERIAL"))){
         let jsonDef = {id: lyph.ID, name: lyph.name};
         if (lyph.ontoref) { jsonDef.external = lyph.ontoref; }
         materialMap[lyph.ID] = jsonDef;
     }
 
+    //Layers
     for (let rel of relations.filter(rel => (rel.relation === "is_layer_of_in_position"))){
         let lyph1 = lyphMap[rel.object];
         let lyph2 = lyphMap[rel.subject];
@@ -297,11 +301,44 @@ export function simplifyData(){
             lyph1.layers.push({id: lyph2.id, position: rel.extra});
         }
     }
+    for (let lyph of Object.values(lyphMap).filter(lyph => lyph.layers)){
+        lyph.layers = lyph.layers.sort((a,b) => (a.position > b.position)).map(x => x.id);
+    }
 
+    //Subtypes
+    for (let rel of relations.filter(rel => (rel.relation === "sub_type_of"))){
+        let lyph1 = lyphMap[rel.object];
+        let lyph2 = lyphMap[rel.subject];
+        if (!lyph1 || !lyph2){
+            console.log("Error: relationship ends not found!", rel.object, rel.subject, lyph1, lyph2);
+        } else {
+            if (!lyph1.subtypes)  { lyph1.subtypes   = [];  }
+            lyph1.subtypes.push(lyph2.id);
+        }
+    }
 
-    for (let lyph of Object.values(lyphMap)){
-        if (lyph.layers){
-            lyph.layers = lyph.layers.sort((a,b) => (a.position > b.position)).map(x => x.id);
+    function replicateMaterials(lyph, material){
+        if (!lyph.subtypes) {return; }
+        for (let subtypeID of lyph.subtypes){
+            let subtype = lyphMap[subtypeID];
+            if (!subtype.materials){ subtype.materials = []; }
+            if (!subtype.materials.includes(material.id)){
+                subtype.materials.push(material.id);
+                replicateMaterials(subtype, material);
+            }
+        }
+    }
+
+    //Layer materials
+    for (let rel of relations.filter(rel => (rel.relation === "has_material_type"))){
+        let lyph = lyphMap[rel.subject];
+        let material = materialMap[rel.object];
+        if (!lyph || !material){
+            console.log("Error: relationship ends not found!", rel.object, rel.subject, lyph, material);
+        } else {
+            if (!lyph.materials){ lyph.materials = []; }
+            lyph.materials.push(material.id);
+            replicateMaterials(lyph, material);
         }
     }
 
